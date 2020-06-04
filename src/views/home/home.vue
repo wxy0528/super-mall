@@ -5,7 +5,7 @@
     </NavBar>
     <van-swipe :autoplay="3000">
       <van-swipe-item v-for="(item, index) in list" :key="index">
-        <img  :src="item.image" class="banner-img">
+        <img :src="item.image" class="banner-img" />
       </van-swipe-item>
     </van-swipe>
     <Recomend :recomend="recomend"></Recomend>
@@ -15,7 +15,6 @@
       <li>列表</li>
       <li>列表</li>
       <li>列表</li>
-      <li>列表</li><li>列表</li>
       <li>列表</li>
       <li>列表</li>
       <li>列表</li>
@@ -27,7 +26,6 @@
       <li>列表</li>
       <li>列表</li>
       <li>列表</li>
-      <li>列表</li><li>列表</li>
       <li>列表</li>
       <li>列表</li>
       <li>列表</li>
@@ -39,7 +37,6 @@
       <li>列表</li>
       <li>列表</li>
       <li>列表</li>
-      <li>列表</li><li>列表</li>
       <li>列表</li>
       <li>列表</li>
       <li>列表</li>
@@ -51,7 +48,14 @@
       <li>列表</li>
       <li>列表</li>
       <li>列表</li>
-      <li>列表</li><li>列表</li>
+      <li>列表</li>
+      <li>列表</li>
+      <li>列表</li>
+      <li>列表</li>
+      <li>列表</li>
+      <li>列表</li>
+      <li>列表</li>
+      <li>列表</li>
       <li>列表</li>
       <li>列表</li>
       <li>列表</li>
@@ -66,31 +70,29 @@
 
 <script>
 import NavBar from "@/components/common/navbar/NavBar";
-import TabControl from '@/components/content/TabControl/TabControl'
-
-import Recomend from './childrencoponents/homerecomend'
-import featureview from './childrencoponents/featureview'
-
+import TabControl from "@/components/content/TabControl/TabControl";
+import Recomend from "./childrencoponents/homerecomend";
+import featureview from "./childrencoponents/featureview";
 import "assets/css/base.css";
 
-import { getHomeMultidata } from "network/home";
+import { getHomeMultidata, getHomeGoods } from "network/home";
 export default {
   data() {
     return {
       list: [],
-      recomend:[],
-      goods:{
-        'pop':{
-          page:0,
-          list:[]
+      recomend: [],
+      goods: {
+        pop: {
+          page: 0,
+          list: []
         },
-        'news':{
-          page:0,
-          list:[]
+        new: {
+          page: 0,
+          list: []
         },
-        'sell':{
-          page:0,
-          list:[]
+        sell: {
+          page: 0,
+          list: []
         }
       }
     };
@@ -102,20 +104,37 @@ export default {
     featureview
   },
   created() {
-    getHomeMultidata().then(res => {
-      // console.log(res);
-      this.list = res.data.data.banner.list;
-      // console.log(this.list);
-      
-      this.recomend=res.data.data.recommend.list;
-      
-    });
+    // 1.请求多个数据
+    this.getHomeMultidata()
+    // 2.请求商品数据
+    this.getHomeGoods('pop')
+    this.getHomeGoods('new')
+    this.getHomeGoods('sell')
+  },
+  methods: {
+    getHomeMultidata() {
+      getHomeMultidata().then(res => {
+        
+        this.list = res.data.data.banner.list;
+        
+        this.recomend = res.data.data.recommend.list;
+      });
+    },
+    getHomeGoods(type){
+      var page=this.goods[type].page + 1
+      getHomeGoods(type,page).then(res=>{
+        console.log(res.data.data.list);
+        this.goods[type].list.push(...res.data.data.list)
+        this.goods[type].page +=1;
+      })
+    }
+
   }
 };
 </script>
 
 <style  scoped>
-.home{
+.home {
   padding: 44px 0 50px;
   /* padding-top:44px */
 }
@@ -129,10 +148,10 @@ export default {
   z-index: 2;
 }
 
-.banner-img{
-    width: 100%;
-  }
-.tab-control{
+.banner-img {
+  width: 100%;
+}
+.tab-control {
   position: sticky;
   top: 44px;
   background: #fff;
