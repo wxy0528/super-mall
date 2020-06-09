@@ -1,24 +1,23 @@
 <template>
   <div class="goodlist">
-      <ul>
-          <li>1级标题</li>
-          <li>2级标题</li>
-          <li>3级标题</li>
-          <li>4级标题</li>
-          <li>5级标题</li>
-          <li>6级标题</li>
-          <li>7级标题</li>
-          <li>8级标题</li>
-          <li>9级标题</li>
-          <li>10级标题</li>
-      </ul>
+    <GoodsListItem v-for="(item,index) in goods" :key="index" :goods-item="item"></GoodsListItem>
   </div>
 </template>
 
 <script>
+import GoodsListItem from './GoodListItem'
 export default {
-  components: {},
-  props: {},
+  components: {
+    GoodsListItem
+  },
+  props: {
+    goods:{
+      type:Array,
+      default(){
+        return []
+      }
+    }
+  },
   data() {
     return {
     };
@@ -30,6 +29,11 @@ export default {
   mounted() {}
 };
 </script>
-<style lang="less" scoped>
-
+<style  scoped>
+.goodlist{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 2px;
+}
 </style>
