@@ -3,6 +3,11 @@
     <NavBar class="home-nav">
       <div slot="center">购物街</div>
     </NavBar>
+     <TabControl :title="['流行','新款','精选']" 
+      class="tab-control" 
+      @tabClick="tabClick"
+      ref="tabControl"
+      ></TabControl>
     <Scroll class="content" ref="scroll" 
     :probe-type="3" 
     @scroll="scrollPosition"
@@ -11,12 +16,16 @@
     >
       <van-swipe :autoplay="3000">
         <van-swipe-item v-for="(item, index) in list" :key="index">
-          <img :src="item.image" class="banner-img" />
+          <img :src="item.image" class="banner-img" @load.prevent.once="SwipeImgLoad"  />
         </van-swipe-item>
       </van-swipe>
       <Recomend :recomend="recomend"></Recomend>
       <featureview></featureview>
-      <TabControl :title="['流行','新款','精选']" class="tab-control" @tabClick="tabClick"></TabControl>
+      <TabControl :title="['流行','新款','精选']" 
+      class="tab-control" 
+      @tabClick="tabClick"
+      ref="tabControl"
+      ></TabControl>
       <GoodsList :goods="showGoods"></GoodsList>
     </Scroll>
     <BackTop @click.native="backClick" v-show="ishowbackTop"></BackTop>
@@ -89,6 +98,7 @@ import featureview from "./childrencoponents/featureview";
 import "assets/css/base.css";
 
 import { getHomeMultidata, getHomeGoods } from "network/home";
+import {debounce} from "components/common/utils.js"
 export default {
   data() {
     return {
@@ -111,8 +121,11 @@ export default {
       // 默认选中流行
       curreyItem: "pop",
       // 默认显示返回顶部
-      ishowbackTop:false
-
+      ishowbackTop:false,
+      // 距离顶部多少
+      tabOffsetTop:0,
+      // 图片加载只调用一次
+      isload:false
     };
   },
   computed: {
@@ -136,6 +149,8 @@ export default {
     this.getHomeGoods("pop");
     this.getHomeGoods("new");
     this.getHomeGoods("sell");
+
+    
   },
   methods: {
     // 网络请求相关方法
@@ -152,7 +167,11 @@ export default {
         // console.log(res.data.data.list);
         this.goods[type].list.push(...res.data.data.list);
         this.goods[type].page += 1;
+
+        // 完成上拉加载更多(this.$refs.scroll:通过$refs找到对应的dom节点,也就是找到scroll.vue中,在调用finishPullUp这个方法)
+        this.$refs.scroll.finishPullUp()
       });
+
     },
     // tab栏切换（字传父）
     tabClick(index) {
@@ -178,10 +197,10 @@ export default {
     },
     // 加载更多
     loadMore(){
-      // console.log("上拉加载更多")
+      console.log("上拉加载更多")
       this.getHomeGoods(this.curreyItem)
       // refresh:重新计算 better-scroll，当 DOM 结构发生变化的时候务必要调用确保滚动的效果正常
-      this.$refs.scroll.scroll.refresh();
+      // this.$refs.scroll.scroll.refresh();
     },
 
     //调用
@@ -189,9 +208,32 @@ export default {
       // x,y,毫秒数(调用子组件的scrollTo方法)
       this.$refs.scroll.scrollTo(0, 0,300);
     },
-    //
-    
+    // 监听轮播图加载完后
+    SwipeImgLoad(){
+    if(!this.isload){
+      console.log(this.$refs.tabControl.$el.offsetTop)
+      this.isload=true
+    }
   }
+    
+  },
+  mounted(){
+    // 1.图片加载完的事件监听
+    // 防抖函数返回的值用refresh接收
+    const refresh = debounce(this.$refs.scroll.refresh,50)
+    // 监听GoodListitem图片加载完成
+    this.$bus.$on("itemImgLoad",()=>{
+      // 调用Scroll.vue的refresh()方法
+      // this.$refs.scroll.refresh()
+      // 直接调用 const refresh
+      refresh()
+    }),
+    // 获取tabcontrol的offsettop值
+    // 所有的组件都有一个$el:用于获取组件中的元素
+    console.log(this.$refs.tabControl.$el.offsetTop)
+      // this.tabOffsetTop = this.$refs.tabControl.offsetTop()
+  },
+  
 };
 </script>
 
@@ -216,9 +258,10 @@ export default {
   width: 100%;
 }
 .tab-control {
-  position: sticky;
+  /* 吸顶效果 */
+  /* position: sticky;
   top: 44px;
-  background: #fff;
+  background: #fff; */
 }
 .content {
   /* height: 300px; */
