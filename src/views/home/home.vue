@@ -4,9 +4,10 @@
       <div slot="center">购物街</div>
     </NavBar>
      <TabControl :title="['流行','新款','精选']" 
-      class="tab-control" 
+      class="tab-control tab-control-top" 
       @tabClick="tabClick"
-      ref="tabControl"
+      ref="tabControl1"
+      v-show="isTabFixed"
       ></TabControl>
     <Scroll class="content" ref="scroll" 
     :probe-type="3" 
@@ -16,7 +17,7 @@
     >
       <van-swipe :autoplay="3000">
         <van-swipe-item v-for="(item, index) in list" :key="index">
-          <img :src="item.image" class="banner-img" @load.prevent.once="SwipeImgLoad"  />
+          <img :src="item.image" class="banner-img" @load="SwipeImgLoad"  />
         </van-swipe-item>
       </van-swipe>
       <Recomend :recomend="recomend"></Recomend>
@@ -24,7 +25,7 @@
       <TabControl :title="['流行','新款','精选']" 
       class="tab-control" 
       @tabClick="tabClick"
-      ref="tabControl"
+      ref="tabControl2"
       ></TabControl>
       <GoodsList :goods="showGoods"></GoodsList>
     </Scroll>
@@ -119,18 +120,19 @@ export default {
         }
       },
       // 默认选中流行
-      curreyItem: "pop",
+      curreyIndex: "pop",
       // 默认显示返回顶部
       ishowbackTop:false,
       // 距离顶部多少
-      tabOffsetTop:0,
+      tabOffsetTop:609,
       // 图片加载只调用一次
-      isload:false
+      isload:false,
+      isTabFixed:false
     };
   },
   computed: {
     showGoods() {
-      return this.goods[this.curreyItem].list;
+      return this.goods[this.curreyIndex].list;
     }
   },
   components: {
@@ -177,28 +179,38 @@ export default {
     tabClick(index) {
       switch (index) {
         case 0:
-          this.curreyItem = "pop";
+          this.curreyIndex = "pop";
+          
           break;
         case 1:
-          this.curreyItem = "new";
+          this.curreyIndex = "new";
+          
           break;
         case 2:
-          this.curreyItem = "sell";
+          this.curreyIndex = "sell";
+         
           break;
       }
+      
+      this.$refs.tabControl2.curreyIndex=index;
+      this.$refs.tabControl1.curreyIndex=index;
+      
     },
     scrollPosition(position){
       // console.log(position)
+      // 1.判断backTop是否显示
       if(position.y<-1000){
         this.ishowbackTop=true
       }else{
         this.ishowbackTop=false
       }
+      // 2.决定tabcontrol是否吸顶
+      this.isTabFixed =(-position.y)>this.tabOffsetTop
     },
     // 加载更多
     loadMore(){
       console.log("上拉加载更多")
-      this.getHomeGoods(this.curreyItem)
+      this.getHomeGoods(this.curreyIndex)
       // refresh:重新计算 better-scroll，当 DOM 结构发生变化的时候务必要调用确保滚动的效果正常
       // this.$refs.scroll.scroll.refresh();
     },
@@ -211,7 +223,8 @@ export default {
     // 监听轮播图加载完后
     SwipeImgLoad(){
     if(!this.isload){
-      console.log(this.$refs.tabControl.$el.offsetTop)
+      console.log(this.$refs.tabControl2.$el.offsetTop)
+      this.tabOffsetTop =this.$refs.tabControl2.$el.offsetTop;
       this.isload=true
     }
   }
@@ -230,10 +243,12 @@ export default {
     }),
     // 获取tabcontrol的offsettop值
     // 所有的组件都有一个$el:用于获取组件中的元素
-    console.log(this.$refs.tabControl.$el.offsetTop)
+    console.log(this.$refs.tabControl2.$el.offsetTop)
       // this.tabOffsetTop = this.$refs.tabControl.offsetTop()
   },
-  
+  destroyed(){
+    console.log("home destroyed")
+  }
 };
 </script>
 
@@ -262,6 +277,11 @@ export default {
   /* position: sticky;
   top: 44px;
   background: #fff; */
+}
+.tab-control-top{
+  position: relative;
+  z-index: 9;
+  background:#fff;
 }
 .content {
   /* height: 300px; */
