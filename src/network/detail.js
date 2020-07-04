@@ -1,4 +1,5 @@
 import {request} from "./request"
+
 export function getdetail(id){
     return request({
         url:"/detail",
@@ -7,6 +8,15 @@ export function getdetail(id){
         }
     })
 }
+
+export function getRecommend(){
+    return request({
+        url:'/recommend'
+    })
+}
+
+
+
 // 商品基本信息
 export class Goods{
     constructor(iteminfo,columns,service){

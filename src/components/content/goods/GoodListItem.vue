@@ -1,6 +1,6 @@
 <template>
   <div class="goodlistitem" @click="listItemClick">
-    <img :src="goodsItem.show.img" alt="" @load="imgload">
+    <img :src="showImage" alt="" @load="imgload">
     <div class="goodsinfo">
        <p>{{goodsItem.title}}</p>
        <span class="price">￥{{goodsItem.price}}</span>
@@ -27,7 +27,11 @@ export default {
     };
   },
   watch: {},
-  computed: {},
+  computed: {
+    showImage(){
+      return this.goodsItem.image || this.goodsItem.show.img
+    }
+  },
   methods: {
     imgload(){
       // console.log('imgload')
@@ -36,8 +40,14 @@ export default {
     },
     // 图片点击跳转详情页
     listItemClick(){
-      this.$router.push('/detail/' + this.goodsItem.iid)
+      if(this.goodsItem.iid){
+        this.$router.push('/detail/' + this.goodsItem.iid)
       // console.log("跳转到详情页")
+      }else if(this.goodsItem.item_id){
+        this.$router.push('/detail/' + this.goodsItem.item_id)
+        location. reload()
+      }
+      
     }
   },
   created() {},

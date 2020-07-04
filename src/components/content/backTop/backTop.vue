@@ -27,6 +27,6 @@ export default {
     height: 43px;
     position: absolute;
     right: 5px;
-    bottom: 50px;
+    bottom: 100px;
 }
 </style>

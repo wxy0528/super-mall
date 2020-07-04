@@ -35,6 +35,7 @@ export default {
   methods: {
     titleClick(index) {
       this.currentIndex = index;
+      this.$emit('titleClick',index)
     },
     navbarBack() {
       this.$router.back();
@@ -53,7 +54,7 @@ export default {
   flex: 1;
 }
 .active {
-  color: var(--color-high-text);
+  color: #ff5777;
 }
 .navbar {
   position: relative;

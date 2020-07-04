@@ -39,7 +39,7 @@ export default {
       },
       refresh(){
         // 重新计算 better-scroll，当 DOM 结构发生变化的时候务必要调用确保滚动的效果正常
-        console.log("-----"),
+        // console.log("-----"),
         this.scroll && this.scroll.refresh()
         
       },
@@ -63,7 +63,7 @@ export default {
       probeType:this.probeType,
       pullUpLoad:this.pullUpLoad
     }),
-    console.log(this.scroll)
+    // console.log(this.scroll)
     // 2.监听滚动位置
     this.scroll.on('scroll',(position)=>{
       // console.log(position);
@@ -71,7 +71,6 @@ export default {
       
     }),
     // 3.监听到scroll滚动到底部
-
     // 监听上拉事件(pullingUp是bscroll的参数,用来监听上拉事件的)
     this.scroll.on("pullingUp",()=>{
       // console.log("上拉加载更多")

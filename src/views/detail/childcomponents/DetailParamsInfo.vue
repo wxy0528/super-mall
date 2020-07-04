@@ -40,7 +40,7 @@ export default {
   methods: {},
   created() {},
   mounted() {
-    console.log(this.paramsInfo);
+    // console.log(this.paramsInfo);
   }
 };
 </script>

@@ -45,6 +45,7 @@ export default {
   },
    methods: {
     loadImg() {
+      // console.log('~~~~~~~~')
       this.$emit("loadImgEvent");
     }
   }
