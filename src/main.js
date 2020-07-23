@@ -3,12 +3,17 @@ import App from './App.vue'
 import router from './router'
 import Router from 'vue-router'
 import { Button,Swipe,SwipeItem,Lazyload,List,PullRefresh,Cell, CellGroup  } from 'vant';
+import store from './store'
+
+
 // 解决路由出现的问题
 const originalPush = Router.prototype.push
 Router.prototype.push = function push(location) {
   return originalPush.call(this, location).catch(err => err)
 }
 
+import VCharts from 'v-charts'
+Vue.use(VCharts)
 
 const usevant = [Button,Swipe,SwipeItem,List,PullRefresh,Cell, CellGroup ];
 //解决移动端适配问题
@@ -26,4 +31,5 @@ Vue.prototype.$bus = new Vue()
 new Vue({
   render: h => h(App),
   router,
+  store
 }).$mount('#app')

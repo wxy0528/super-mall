@@ -20,14 +20,17 @@ export function getRecommend(){
 // 商品基本信息
 export class Goods{
     constructor(iteminfo,columns,service){
+        // this代表goods这个构造函数
         this.desc=iteminfo.title,
         this.price=iteminfo.price,
+        this.desc =iteminfo.desc
         this.oldPrice=iteminfo.oldPrice,
         this.discount=iteminfo.discountDesc,
         this.newPrice=iteminfo.price,
         this.discountBgColor=iteminfo.discountBgColor
         this.columns= columns,
-        this.service= service
+        this.service= service,
+        this.realprice=iteminfo.lowNowPrice
     }
 }
 

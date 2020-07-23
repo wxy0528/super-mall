@@ -69,6 +69,7 @@ export default {
           list: []
         }
       },
+
       // 默认选中流行
       currentKey: "pop",
       // 默认显示返回顶部
@@ -111,12 +112,13 @@ export default {
       getHomeMultidata().then(res => {
         this.list = res.data.data.banner.list;
         this.recomend = res.data.data.recommend.list;
+        // console.log(res)
       });
     },
     getHomeGoods(type) {
       var page = this.goods[type].page + 1;
       getHomeGoods(type, page).then(res => {
-        // console.log(res.data.data.list);
+        // console.log(res.data);
         this.goods[type].list.push(...res.data.data.list);
         this.goods[type].page += 1;
         // 完成上拉加载更多(this.$refs.scroll:通过$refs找到对应的dom节点,也就是找到scroll.vue中,在调用finishPullUp这个方法)
@@ -125,7 +127,7 @@ export default {
     },
     // tab栏切换（字传父）
     tabClick(index) {
-      console.log(index)
+      console.log(index);
       switch (index) {
         case 0:
           this.currentKey = "pop";
@@ -137,8 +139,8 @@ export default {
           this.currentKey = "sell";
           break;
       }
-      console.log(this.$refs.TopTabControl.currentIndex)
-      
+      console.log(this.$refs.TopTabControl.currentIndex);
+
       this.$refs.TopTabControl.currentIndex = index;
       this.$refs.tabControl.currentIndex = index;
     },
@@ -188,10 +190,10 @@ export default {
         refresh();
       };
     };
-    this.$bus.$on("itemImgLoad", this.itemLImgListener)
-      // 获取tabcontrol的offsettop值
-      // 所有的组件都有一个$el:用于获取组件中的元素
-      // console.log(this.$refs.tabControl.$el.offsetTop);
+    this.$bus.$on("itemImgLoad", this.itemLImgListener);
+    // 获取tabcontrol的offsettop值
+    // 所有的组件都有一个$el:用于获取组件中的元素
+    // console.log(this.$refs.tabControl.$el.offsetTop);
     // this.tabOffsetTop = this.$refs.tabControl.offsetTop()
   },
   destroyed() {

@@ -2,6 +2,12 @@
   <div class="detail">
     <DetailNavBar @titleClick="barClick" ref="nav"></DetailNavBar>
     <!-- <h2>{{id}}</h2> -->
+    <!-- <div>{{$store.state.cartList.length}}</div> -->
+    <ul>
+      <li v-for="(item,index) in $store.state.cartList" :key="index" >
+        {{item}}
+      </li>
+    </ul>
     <Scroll class="content" ref="scroll" @scroll="contentScroll" :probeType="3">
       <van-swipe :autoplay="3000" class="detail-bar" indicator-color="#ff66ee">
         <van-swipe-item v-for="(item, index) in imgTop" :key="index">
@@ -16,7 +22,7 @@
       <goodList :goods="goods" ref="list"></goodList>
     </Scroll>
     <BackTop @click.native="backClick" v-show="ishowbackTop"></BackTop>
-    <DetailBottomBar></DetailBottomBar>
+    <DetailBottomBar @addCart="addCart"></DetailBottomBar>
   </div>
 </template>
 
@@ -28,13 +34,13 @@ import DetailImageInfo from "./childcomponents/DetailImageInfo";
 import DetailParamsInfo from "./childcomponents/DetailParamsInfo";
 import DetailCommentInfo from "./childcomponents/DetailCommentInfo";
 import goodList from "components/content/goods/GoodsList";
-import DetailBottomBar from './childcomponents/DetailBottomBar';
+import DetailBottomBar from "./childcomponents/DetailBottomBar";
 import BackTop from "components/content/backTop/backTop";
 
 import Scroll from "components/common/scroll/Scroll";
 import { getdetail, Goods, getRecommend } from "network/detail.js";
 import { debounce } from "components/common/utils.js";
-import { itemListenerMixin } from "components/common/mixin.js";       
+import { itemListenerMixin } from "components/common/mixin.js";
 export default {
   name: "Detail",
   components: {
@@ -73,7 +79,7 @@ export default {
       getThemeTopY: null,
       currentIndex: 0,
       // 默认显示返回顶部
-      ishowbackTop: false,
+      ishowbackTop: false
     };
   },
   watch: {},
@@ -92,7 +98,7 @@ export default {
       //   this.$refs.list.$el.offsetTop
       // );
       // console.log(index);
-      this.currentIndex=index
+      this.currentIndex = index;
       this.$refs.scroll.scrollTo(0, -this.themeTopYs[index], 100);
     },
     // 监听滚动位置
@@ -104,12 +110,11 @@ export default {
       let length = this.themeTopYs.length;
       // console.log(this.themeTopYs)
       for (let i = 0; i < length - 1; i++) {
-        
         if (
           this.currentIndex !== i &&
-          (positionY >= this.themeTopYs[i] && positionY < this.themeTopYs[i + 1])
+          positionY >= this.themeTopYs[i] && positionY < this.themeTopYs[i + 1]
         ) {
-          console.log(i)
+          console.log(i);
           this.currentIndex = i;
           this.$refs.nav.currentIndex = this.currentIndex;
         }
@@ -121,7 +126,7 @@ export default {
       } else {
         this.ishowbackTop = false;
       }
-      
+
       // console.log(this.$refs.nav.currentIndex)
     },
     //调用
@@ -129,6 +134,24 @@ export default {
       // x,y,毫秒数(调用子组件的scrollTo方法)
       this.$refs.scroll.scrollTo(0, 0, 300);
     },
+    // 点击添加到购物车
+    addCart() {
+      console.log("添加到购物车");
+      // 1.获取购物车中需要展示的信息
+      const product = {};
+      product.image = this.imgTop[0];
+      product.title=this.goodsInfo.title;
+      product.desc =this.goodsInfo.desc;
+      product.price=this.goodsInfo.realprice
+      product.iid =this.goodsInfo.iid,
+      product.count = this
+      // product[image] = this.topImages[0];
+      // product[title] = this.goodsInfo.title;
+      // product[desc] = this.goodsInfo.desc;
+
+      // 2.将商品添加到购物车中
+      this.$store.dispatch('addCart',product)
+    }
   },
   created() {
     // 给getThemeTopY赋值(给getThemeTopY进行防抖操作)第一次进入时值不对
@@ -152,7 +175,7 @@ export default {
     this.id = this.$route.params.iid;
     // 2.请求数据
     getdetail(this.id).then(res => {
-      // console.log(res.data);
+      console.log(res.data);
       // 获取数据
       const data = res.data.result;
       // 3.取出轮播图数据
